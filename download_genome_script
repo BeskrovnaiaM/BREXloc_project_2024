@@ -1,4 +1,4 @@
 #!/bin/bash
 # Downloading genomes
-datasets download genome accession --inputfile /mnt/d/BREX/BREXrep/BREXloc_project_2024/test_genome.txt --filename /mnt/d/BREX/BREXrep/BREXloc_project_2024/data/genomes.zip --include genome,gtf
-unzip /mnt/d/BREX/BREXrep/BREXloc_project_2024/data/genomes.zip
+datasets download genome accession --inputfile ./BREXloc_project_2024/test_genome.txt --filename ./BREXloc_project_2024/data/genomes.zip --include genome,gtf
+unzip ./BREXloc_project_2024/data/genomes.zip
