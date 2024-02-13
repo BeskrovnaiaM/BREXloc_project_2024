@@ -1,0 +1,7 @@
+#!/bin/bash
+# Downloading genomes
+file="genomes_accession"
+for var in $(cat $file)
+do
+datasets download genome accession $var --filename $var.zip
+done
