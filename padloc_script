@@ -1,7 +1,0 @@
-#!/bin/bash
-# Search loc by padloc
-file="test_genome.txt"
-for var in $(cat $file)
-do
-padloc --fna ./BREXloc_project_2024/ncbi_dataset/data/$var/$var*.fna --outdir ./BREXloc_project_2024/padloc/
-done
