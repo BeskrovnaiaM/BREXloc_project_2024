@@ -2,4 +2,4 @@
 
 > WIP
 
-**For latest version, please, checkout to `progresss` branch**
+**For latest version, please, checkout to `progress` branch**
