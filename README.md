@@ -14,6 +14,6 @@
 
 **data**
 
-- `2024_01_df-RefSeq` - list of BREX-system contained bacteria obtained from [DefenceFinder RefSeq DB](https://defensefinder.mdmlab.fr/wiki/refseq/) (date of access 31.01.2024)
+- `2024_01_df-RefSeq` - of bacteria containing BREX-systems obtained from the [DefenceFinder RefSeq DB](https://defensefinder.mdmlab.fr/wiki/refseq/) (date of access 31.01.2024)
 - `2024_02_genomes_accessios_dedup` - RefSeq accession IDs, extracted from `2024_01_df-RefSeq` after duplicate removal
 - `brex_hmm_list` - hmm-profiles for BREX-proteins extrated from `Padloc` hmm-file *via* `extract_hmm_profiles`.
