@@ -2,7 +2,6 @@
 # Search of novel BREX-associated immune systems with complementary mode of action, based on comparative genomics approach
 ### *Margarita Beskrovnaia, Kirill Petrikov*
 ### Supervised by Oksana Kotovskaya
-> Branch `progress` for the working version of the project
 
 &nbsp;  
 **Aim**: To characterize the diversity of gene clusters within BREX loci and implement a pipeline to search this kind of loci in metagenomics data.
