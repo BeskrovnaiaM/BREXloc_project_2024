@@ -1,0 +1,7 @@
+PglW,PglX,BrxC,PglZ,BrxD,BrxHI,2
+BrxA,BrxB,BrxC,DDE_Tnp_IS240,DUF1153,BrxC,PglX,DUF6161,DUF6161,PglZ,BrxL,1
+BrxA,BrxB,BrxC,PglX,SoFic,PglZ,BrxL,1
+BrxF,BrxC,PglXI,BrxHII,PglZ,BrxA,1
+WYL,BrxA,BrxB,BrxC,PglX,PglZ,BrxL,1
+BrxA,BrxB,BrxC,PglX,PsyrT,PsyrA,HEC-06,PglZ,BrxL,1
+BrxA,BrxB,BrxC,PglX,HEC-06,PglZ,BrxL,1

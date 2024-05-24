@@ -27,3 +27,5 @@ clustering_results/clusters_by_size.tsv \
 hh_annotations/ \
 test
 
+python3 src/loci_counter.py test_final_clusters_table.tsv 0 test_loci_results.txt
+
