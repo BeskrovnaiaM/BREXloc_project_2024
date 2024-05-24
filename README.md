@@ -11,15 +11,17 @@
 - To validate the workflow on the open databases
 - To arrange the implemented workflow in the form of a Docker container to analyze newly sequenced data
 
-**Content**
+### Content
 
-[Docker-meta for brexctractor](#Docker-meta-for-brexctractor)
+- [Docker-meta for brexctractor](#Docker-meta)
 
-[Padloc_custom_DB folders](#Padloc_custom_DB-folders)
+- [Test run](#Test-run)
 
-[Links](#Links)
+- [Padloc_custom_DB folders](#Padloc_custom_DB-folders)
 
-## `Docker-meta` for `brexctractor`
+- [Links](#Links)
+
+## `Docker-meta`
 
 Contains the files needed to build a docker image that allows extraction of brex regions from a metagenome database.
 
@@ -73,6 +75,40 @@ The script processes files in a single directory at once. If you need to process
 
 ```bash
 for FILE in $(ls brexctraction); do python3 brextractor.py brextraction/${FILE} brextraction/results/; done
+```
+
+## `Test run`
+
+The test scripts uses as input `test_padloc_data` - data obtained from the annotation of genomes by `Padlock` with a custom database (only BREX-proteins hmm-profiles)
+
+You can test run the workflow in two ways:
+- `short_test_run.sh` uses ready-made clusterin results by `MMseqs2` and annotations results by `Padloc` and `HH-Suite` (`clustering_results_ready`, `p_annotations_ready`, `hh_annotations_ready`).
+- `full_test_run.sh` performs the full workflow, but is time-consuming as it requires downloading the `Pham-A` database
+
+If all steps are successfully completed, two files will be created in the root directory, among other:
+- `test_all_ann_clusters_table.tsv`
+- `test_final_clusters_table.tsv`
+
+Examples of these expected results can also be found in `test_data`
+
+> Note that clustering results may differ between different runs on the same data, so small amounts are acceptable.
+
+**Instruction**
+
+- Clone repo
+```bash
+git@github.com:BeskrovnaiaM/BREXloc_project_2024.git
+```
+
+- Create new environment `BREX_loci`
+```bash
+mamba env create -f environment.yml
+```
+
+- Run `short_test_run.sh` or `full_test_run.sh`
+```bash
+bash short_test_run.sh
+bash full_test_run.sh
 ```
 
 
