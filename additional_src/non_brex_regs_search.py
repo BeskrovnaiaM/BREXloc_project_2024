@@ -1,14 +1,16 @@
-"""v1.1
-    Считает общее число не-brex-систем в csv-файлах Padloc,
-    учитывая локализацию ЗС относительно brex-системы
+"""
+    Counts the total number of non-BREX systems
+    taking into account them localization
+
+    Input positional args:
+    path to directory with PADLOC csv-files
+    path to directory with gff-files with localization marks
     
-    Первый аргумент - путь до директории с результатами Падлока
-    Второй аргумент - путь до директории с gff-файлами разметки
-    
-    Записывает три tsv-файла:
-    'Total_non_brex_systems.tsv' - все не-brex-системы
-    'Total_inner_systems.tsv' - только с внутренней локализацией
-    'Total_other_systems.tsv' - остальные
+    Output files:
+    'Total_non_brex_systems.tsv'
+    'Total_inner_systems.tsv'
+    'Total_other_systems.tsv'
+    'Top_10_inner_systems.png'
 """
 
 import os
@@ -18,7 +20,7 @@ import pandas as pd
 
 def write_results(output_file_name: str, resuls_to_write: dict) -> None:
     """
-    Принимает словарь с подсчитанными ЗС и записывает в файл
+    Takes as input a dictionary with counted ES and writes it to a file
     """
     with open(output_file_name, mode='w') as file:
         file.write('System_type' + '\t' + 'Number' + '\n')
@@ -26,21 +28,27 @@ def write_results(output_file_name: str, resuls_to_write: dict) -> None:
             new_line = key + '\t' + str(value)  +'\n'
             file.write(new_line)
 
+def plot_sys(syst_dict: dict, n_to_choose: int = 10):
+    """Selects the specified top number of defense systems 
+    from the dictionary in the form of a dataframe"""
+    
+    df_plot = pd.DataFrame.from_dict(syst_dict, orient='index')
+    df_plot.rename(columns={0: 'Number'}, inplace=True)
+    top_n = df_plot.sort_values(by=['Number'], ascending=False).iloc[:n_to_choose]
+    return top_n   
 
-# Первый аргумент - путь до директории с результатами Падлока
-input_padloc_dir = sys.argv[1]
+# input_padloc_dir = sys.argv[1]
+# input_pos_dir = sys.argv[2]
 
-# Второй аргумент - путь до директории с gff-файлами, содержащими метку локализации 'position'
-input_pos_dir = sys.argv[2]
+input_padloc_dir = '/home/holydiver/Main/IB/Prrr/Data/03_Padloc_reannotation/Reann'
+input_pos_dir = '/home/holydiver/Main/IB/Prrr/Data/02_BREX_regs/3_BREX_regs'
 
-# Словари для итогового подсчёта ЗС
-total_non_brex_def_systems = {}  # суммарных не-brex-систем
-total_inner_def_systems = {}  # только со внутренней локализацией
-total_other_def_systems = {}  # с прочей локализацией
+total_non_brex_def_systems = {}
+total_inner_def_systems = {}
+total_other_def_systems = {}
 
-loci_with_inner_sys = 0  # счётчик регионов, где в принципе встречаются ЗС с внутренней локализацией
+loci_with_inner_sys = 0
 
-# Заголовок для gff-датафрейма
 gff_header = ['seqid', '_2', '_3', '_4', '_5', '_6', '_7', '_8', 'Comment', 'Loc']
 
 for file_name in os.listdir(input_padloc_dir):
@@ -50,44 +58,33 @@ for file_name in os.listdir(input_padloc_dir):
     curr_other_def_systems = {}
 
     if file_name.endswith('csv'):
-        # Таблица с результатами Padloc
         df = pd.read_csv(os.path.join(input_padloc_dir, file_name)).iloc[:, :4]
 
-        # Таблица с меткой локализации белков
         file_name_pos = file_name.split('padloc')[0] + 'positions.gff'
         df_pos = pd.read_csv(os.path.join(input_pos_dir, file_name_pos),
                              sep='\t', names=gff_header).iloc[:, [0, 8, 9]]
 
-        # создание уникального ID позволяет учесть совпадающие названия типов систем
+        # creating a unique ID allows you to take into account matching names of system types
         df['Name'] = df['system'] + '%' + df['system.number'].astype('str')
 
-        # Столбик 'target.name' получается как и аналогичный в 'df'
-        # Это позволит провести сопоставление локализации белков с принадлежностью к конкретной ЗС
         df_pos['target.name'] = (df_pos['seqid'] +
                                  '_' +
                                  [i for i in map(lambda x: x.split(';')[0].split('_')[1], df_pos['Comment'])])
-
-        # Слияние получается по колонке'target.name', для не-брекс-систем, и из 'df_pos' добавляется локализация
+        
         df_non_brex = df[df['system'].str[:4] != 'brex'].merge(df_pos.iloc[:, [2, 3]], how='left')
-
-        # Группировка по уникальному для каждой системы 'Name', и создаётся соответствующая ячейка с локализацией
         uniq_sys = df_non_brex.loc[:, ('Name', 'Loc')].groupby('Name').agg(lambda x: set(x))
 
-        # Список со всеми не-брекс-системами
+        # Results lists
         curr_non_brex_def_systems = [i for i in map(lambda x: x.split('%')[0], uniq_sys.index.unique())]
-        
-        # Только с внутренней локализацией
         curr_inner_def_systems = [i for i in
                                   map(lambda x: x.split('%')[0], uniq_sys[uniq_sys['Loc'] == {'inner'}].index.unique())]
-        
-        # Остальные
         curr_other_def_systems = [i for i in
                                   map(lambda x: x.split('%')[0], uniq_sys[uniq_sys['Loc'] != {'inner'}].index.unique())]
                 
         if len(curr_inner_def_systems) > 0:
             loci_with_inner_sys += 1
                     
-        # Обновляем подсчёт не-брекс-систем
+        # Counting
         for def_sys in curr_non_brex_def_systems:
             if def_sys in total_non_brex_def_systems:
                 total_non_brex_def_systems[def_sys] += 1
@@ -106,7 +103,7 @@ for file_name in os.listdir(input_padloc_dir):
             else:
                 total_other_def_systems[def_sys] = 1
 
-#  Сохраняем результаты
+#  Outputs
 output_files_names = ('Total_non_brex_systems.tsv', 'Total_inner_systems.tsv', 'Total_other_systems.tsv')
 def_systems = (total_non_brex_def_systems, total_inner_def_systems, total_other_def_systems)
 

@@ -26,10 +26,10 @@ def update_second_column(input_file, output_file):
 
 
 def get_number_from_protein(protein_string):
-    # Находим второе появление символа "_" и извлекаем число после него
+    # Find the second occurrence of the "_" character and extract the number after it
     second_underscore_index = protein_string.find('_', protein_string.find('_') + 1)
     number_string = protein_string[second_underscore_index + 1:]
-    # Преобразуем строку в число, учитывая ведущие нули
+    # Convert the string to a number, taking into account leading zeros
     return int(number_string.lstrip('0'))
 
 
@@ -39,10 +39,9 @@ def write_to_output_file(clust_region_list, output_file):
 
 
 def main(input_file, output_file, small_cluster_threshold=0):
-    # Сортируем файл по второй колонке
+    # Sort the file by the second column
     with open(input_file, 'r') as f:
         lines = f.readlines()
-        # Пропускаем первую строку (хэдер)
         header = lines[0]
         data = sorted(lines[1:], key=lambda x: x.split(' ')[2])
 
@@ -50,11 +49,10 @@ def main(input_file, output_file, small_cluster_threshold=0):
     prev_protein_number = None
 
     for line in data:
-        # Разделяем строку по пробелу
         columns = line.strip().split(' ')
-        # Проверяем, есть ли четыре столбца
+        # Check if there are four columns
         if len(columns) < 3:
-            print("Ошибка: Неверное количество столбцов в строке:", line)
+            print("Error: Invalid number of columns per row:", line)
             continue
         protein = columns[2]
         size_clust = int(columns[1])
@@ -62,31 +60,31 @@ def main(input_file, output_file, small_cluster_threshold=0):
         if size_clust <= small_cluster_threshold:
             clust_region_value = 'x' + clust_region_value
 
-        # Получаем число из второй колонки (protein)
+        # Get the number from the second column (protein)
         try:
             protein_number = get_number_from_protein(protein)
         except ValueError:
-            print("Ошибка: Невозможно извлечь число из строки:", protein)
+            print("Error: Cannot extract number from string:", protein)
             continue
 
         if prev_protein_number is None:
             prev_protein_number = protein_number
 
-        # Проверяем разницу между текущим и предыдущим числами
+        # Check the difference between the current and previous numbers
         if abs(protein_number - prev_protein_number) <= 1:
-            # Добавляем значение в лист clust_region
-            clust_region.append(clust_region_value + '_' + columns[-2])  # Взять значение из последней колонки
+            # Add a value to the clust_region sheet
+            # Take the value from the last column
+            clust_region.append(clust_region_value + '_' + columns[-2])
         else:
-            # Разница больше 1, записываем текущий список в новый файл
+            # The difference is greater than 1, write the current list to a new file
             write_to_output_file(clust_region, output_file)
-            # Очищаем список
             clust_region = []
-            # Добавляем текущее значение в новый список
-            clust_region.append(clust_region_value + '_' + columns[-2])  # Взять значение из последней колонки
+            # Add the current value to a new list
+            # Take the value from the last column
+            clust_region.append(clust_region_value + '_' + columns[-2])
 
         prev_protein_number = protein_number
-
-    # Записываем оставшиеся данные в файл
+        
     write_to_output_file(clust_region, output_file)
 
 
@@ -137,7 +135,7 @@ def process_csv(input_file, output_file):
 
 
 def process_protein_names(names):
-    # Удаляем приписки "_inner" и "_brex" и сортируем имена белков
+    # Remove the "_inner" and "_brex" annotations and sort the protein names
     processed_names = [name.replace("_inner", "").replace("_brex", "") for name in names]
     return tuple(processed_names)
 
@@ -148,21 +146,16 @@ def count_unique_regions(file_path):
     with open(file_path, 'r') as file:
         csv_reader = csv.reader(file)
         for row in csv_reader:
-            # Преобразуем имена белков и считаем уникальные регионы
+            # Convert protein names and count unique regions
             region = process_protein_names(row)
             regions_counter[region] += 1
 
-    # Сортируем словарь по значениям (количество встречаемости региона) в убывающем порядке
+    # Sort the dictionary by values (number of occurrences of the region) in descending order
     sorted_regions_counter = dict(sorted(regions_counter.items(),
                                          key=lambda item: item[1],
                                          reverse=True
                                          )
-                                  )
-
-    # Выводим результаты
-    # print("Unique regions count:")
-    # for region, count in sorted_regions_counter.items():
-    #     print(f"{region}: {count}")
+                                  ))
     return sorted_regions_counter
 
 
@@ -170,7 +163,7 @@ def write_regions_to_file(regions_counter, output_file_path):
     with open(output_file_path, 'w', newline='') as output_file:
         csv_writer = csv.writer(output_file)
         for region, count in regions_counter.items():
-            # Записываем одну строку для каждого региона
+            # Write one line for each region
             row = list(region) + [count]
             csv_writer.writerow(row)
 
@@ -178,15 +171,12 @@ def write_regions_to_file(regions_counter, output_file_path):
 def read_txt_file(file_path):
     data_dict = {}
     with open(file_path, 'r') as file:
-        # Пропускаем заголовок
         next(file)
         for line in file:
-            # Разбиваем строку по пробелам
             parts = line.strip().split()
-            # Получаем ключ (первая колонка) и значение (пятая колонка)
+           # Get the key (first column) and value (fifth column)
             key = parts[0]
             value = parts[3]
-            # Добавляем в словарь
             data_dict[key] = value
         data_dict['SINGLETONE'] = 'singletone'
     return data_dict
@@ -196,14 +186,14 @@ def process_file(input_file_path, output_file_path, data_dict):
     with open(input_file_path, 'r') as input_file, open(output_file_path, 'w') as output_file:
         for line in input_file:
             keys = line.strip().split(',')
-            # Игнорируем последнее число в строке
+            # Ignore the last number in the line
             count = keys[-1]
             keys = keys[:-1]
             result_line = []
             for key in keys:
                 if key in data_dict:
                     result_line.append(data_dict[key])
-            # Записываем строку в выходной файл с добавлением последнего числа из словаря
+            # Write a string to the output file adding the last number from the dictionary
             output_file.write(','.join(result_line) + ',' + count + '\n')
 
 
@@ -226,7 +216,7 @@ with open('output_step_2.csv', 'r') as f_in, open('output_step_3.csv', 'w', newl
 
 filter_csv('output_step_3.csv', 'output_step_4.csv')
 
-# Использование функции для обработки CSV файла
+# Using a function to process a CSV file
 process_csv('output_step_4.csv', 'output_step_5.csv')
 
 regions_counter = count_unique_regions('output_step_5.csv')

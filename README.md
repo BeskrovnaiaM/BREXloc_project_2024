@@ -7,7 +7,7 @@
 **Aim**: To characterize the diversity of gene clusters within BREX loci and implement a pipeline to search this kind of loci in metagenomics data.
 
 **Objectives:**
-- To implement a workflow for extraction (M) and characterization of variable gene clusters within BREX loci
+- To implement a workflow for extraction and characterization of variable gene clusters within BREX loci
 - To validate the workflow on the open databases
 - To arrange the implemented workflow in the form of a Docker container to analyze newly sequenced data
 
@@ -19,7 +19,9 @@
 
 - [Test run](#Test-run)
 
-- [Padloc_custom_DB folders](#Padloc_custom_DB-folders)
+- [additional_src](#additional_src)
+
+- [Padloc_trial_DB_data](#Padloc_trial_DB_data)
 
 - [Links](#Links)
 
@@ -128,7 +130,7 @@ Create `unpacked_msa/` directory with multiple sequence alignments for each clus
 
 ### `hhsuite_annotation.sh`
 
-Performs annotatin by `HH-Suit` tool using `hhblits` command with one iteration (parameter `-n 1`)
+Performs annotatin by `HH-Suite` tool using `hhblits` command with one iteration (parameter `-n 1`)
 
 **Requires**
 - multiple sequence alignments for clusters (`mmseqs_clusters.sh` output)
@@ -201,8 +203,8 @@ Counts the number of regions with a unique composition in accordance with the gi
 The test scripts uses as input `test_padloc_data` - data obtained from the annotation of genomes by `PADLOC` with a custom database (only BREX-proteins hmm-profiles)
 
 You can test run the workflow in two ways:
-- `short_test_run.sh` uses ready-made clusterin results by `MMseqs2` and annotations results by `PADLOC` and `HH-Suite` (`clustering_results_ready`, `p_annotations_ready`, `hh_annotations_ready`).
-- `full_test_run.sh` performs the full workflow, but is time-consuming as it requires downloading the `Pham-A` database
+- `short_test_run.sh` uses ready-made clustering results by `MMseqs2` and annotations results by `PADLOC` and `HH-Suite` (`clustering_results_ready`, `p_annotations_ready`, `hh_annotations_ready`).
+- `full_test_run.sh` performs the full workflow, but is time-consuming as it requires downloading the `Pfam-A` database
 
 If all steps are successfully completed, two files will be created in the root directory, among other:
 - `test_final_clusters_table.tsv`
@@ -230,37 +232,33 @@ bash short_test_run.sh
 bash full_test_run.sh
 ```
 
-
-## `Padloc_custom_DB` folders
-
-Contains materials for working with a test custom database
-
-**Padloc_custom_DB_scrips**
-
-- `NCBI_data` - download small data *via* `ncbi-datasets`
-- `NCBI_large_data` - download large data (> 1000 genomes or > 15 Gb) *via* `ncbi-datasets`
-- `padloc_from_list` - runnig `PADLOC` on `ncbi-dataset` downloaded data for list of accessions IDs
-- `padloc_from_folder` - runnig `PADLOC` on `ncbi-dataset` downloaded data for all subdirectories
-- `extract_hmm_profiles` - extract hmm-profiles for Brx/Plg proteins from PADLOC hmm-database file
+## `additional_src`
+Additional scripts used when implementation the project
+- `NCBI_large_data.sh` - download large data (> 1000 genomes or > 15 Gb) *via* `ncbi-datasets`
+- `extract_hmm_profiles` - extract hmm-profiles for Brx/Pgl proteins from `PADLOC` hmm-database file
+- `padloc_custom.sh` - runnig `PADLOC` on data downloaded by`NCBI_large_data.sh`. Uses custom hmm-database (only Brx/Pgl proteins). **Requires** `extract_hmm_profiles.sh`
 - `multibrex_search.py` - search genomes with more than one copy of BREX-system in `PADLOC` results
-- `brex-extraction-padloc.ipynb` - search coordinates of BREX-system loci in `PADLOC` results, adds 10 kb flanks and creates corresponding proteins-fasta, gff-files and modified gff with proteins localisation label relative BREX-loci: upstream, inner or downstream.
-- `non_brex_regs_search` - search non-brex systems on `Padloc` results with additional gff-file with localisation label, which allows localization to be taken into account
+- `non_brex_regs_search` - search non-brex systems on `PADLOC` results with additional `gff`-file with localisation label, which allows localization to be taken into account
 
-**Padloc_custom_DB_data**
-
+## `Padloc_trial_DB_data`
+Basic resuts obtained for trial database during the implementation of the project
 - `2024_01_df-RefSeq` - data of bacteria containing BREX-systems.
   >Source: [DefenseFinder RefSeq DB](https://defensefinder.mdmlab.fr/wiki/refseq/) (date of access 31.01.2024)
 - `2024_02_multi_brex_df-RefSeq` - entries from `2024_01_df-RefSeq` corresponding bacteria containing multiple BREX-systems. Column 'abundance' was added.
 - `2024_02_genomes_accessios_dedup` - RefSeq accession IDs, extracted from `2024_01_df-RefSeq` after duplicate removal
-- `2024_02_brex_hmm_list` - hmm-profiles for BREX-proteins extrated from `PADLOC` hmm-file *via* `extract_hmm_profiles`
-- `2024_02_multi_brex_Padloc` - list of accessions with more than one copy of BREX-system *via* `multibrex_search`
-- `2024_03_19_brex_regs_coord.bed` - BREX-regions coordinates
+- `2024_02_brex_hmm_list` - hmm-profiles for BREX-proteins extrated from `PADLOC` hmm-file *via* `extract_hmm_profiles.py`
+- `2024_02_multi_brex_Padloc` - list of accessions with more than one copy of BREX-system *via* `multibrex_search.py`
+- `2024_03_19_brex_regs_coord.bed` - BREX-regions coordinates *via* `brex-extraction-padloc.py`
+- `2024_04_09_final_clusters_table.tsv` - summary tables with a clusters, proteins and annotations *via* `annotation_table.py`
+- `2024_04_29_BREX_loci_unique.txt` - *via* `loci_counter.py` (singleton treshold = 0)
 
 [**Internal data**](https://figshare.com/s/643c4203c7d2769bb938)
 
 - `2024-02-26_padloc_hmm_custom` - `PADLOC` results for `2024_02_genomes_accessios_dedup` accessions (exept two entries: GCF_016887565.1, GCF_005931095.1)
-- `2024_03_20_brex_extr_regs` - BREX-system loci with *c.* 10 kb flanks extracted *via* `brex-extraction-padloc.ipynb`. Contains corresponding proteins-fasta and gff-files, and modified gff with localisation label.
-- `2024_03_20_prot_brex_regs` - all proteins from BREX-regions
+- `2024_03_20_brex_extr_regs` - BREX-system loci with *c.* 10 kb flanks generated by `brex-extraction-padloc.py`. Contains corresponding `fasta-proteins` and `gff`-files, and modified `gff` with localisation column.
+- `2024_03_20_prot_brex_regs` - all proteins from BREX-loci
+- `2024_04_Padloc.tar.gz` - BREX-loci annotations by `padloc_annotation.sh`
+- `2024_04_21_HH_Suite.tar.gz` - clusters annotations by `hhsuite_annotation.sh`
 
 ## Links
 - [NCBI Datasets](https://www.ncbi.nlm.nih.gov/datasets/docs/v2/reference-docs/command-line/datasets/) CLI tool v16.4.5

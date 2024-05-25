@@ -1,18 +1,15 @@
-'''Сохраняет участок файла между start_line и end_line,
-если строка после start_line содержит ключевое название гена 
-'''
+"""
+Selects from the general file with hmm-profiles 
+into a new hmm-file only those profiles whose names are specified
+"""
 
-# кортеж ключевых названий генов
+# Names of proteins whose hmm-profiles need to be selected
 brx_names = ('BrxA', 'BrxB', 'BrxC', 'BrxD', 'BrxE', 'BrxF', 'BrxH', 'BrxL', 'BrxP', 'PglW', 'PglX', 'PglZ')
 
 brx_lst = []
 
 start_line = 'HMMER3'
 end_line = '//'
-
-# Добавить 'end_line' для гарантированной остановки
-with open('padlocdb.hmm', 'a') as file:
-    file.write(end_line)
 
 with open('padlocdb.hmm') as file:
     for line in file:
@@ -33,3 +30,4 @@ with open('padlocdb.hmm') as file:
 with open('brex_select.hmm', mode='w') as file:
     for line in brx_lst:
         file.write(line)
+
