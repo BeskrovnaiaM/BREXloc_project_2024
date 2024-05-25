@@ -19,7 +19,9 @@
 
 - [Test run](#Test-run)
 
-- [Padloc_custom_DB folders](#Padloc_custom_DB-folders)
+- [additional_src](#additional_src)
+
+- [Padloc_trial_DB_data](#Padloc_trial_DB_data)
 
 - [Links](#Links)
 
@@ -230,26 +232,25 @@ bash short_test_run.sh
 bash full_test_run.sh
 ```
 
-## `Padloc_custom_DB` folders
-
-Contains materials for working with a test custom database
-
-**additional_src**
+## `additional_src`
+Additional scripts used when implementation the project
 - `NCBI_large_data.sh` - download large data (> 1000 genomes or > 15 Gb) *via* `ncbi-datasets`
 - `extract_hmm_profiles` - extract hmm-profiles for Brx/Plg proteins from `PADLOC` hmm-database file
 - `padloc_custom.sh` - runnig `PADLOC` on data downloaded by`NCBI_large_data.sh`. Uses custom hmm-database (only Brx/Plg proteins). **Requires** `extract_hmm_profiles.sh`
 - `multibrex_search.py` - search genomes with more than one copy of BREX-system in `PADLOC` results
 - `non_brex_regs_search` - search non-brex systems on `PADLOC` results with additional `gff`-file with localisation label, which allows localization to be taken into account
 
-**Padloc_trial_DB_data**
-
+## `Padloc_trial_DB_data`
+Basic resuts obtained for trial database during the implementation of the project
 - `2024_01_df-RefSeq` - data of bacteria containing BREX-systems.
   >Source: [DefenseFinder RefSeq DB](https://defensefinder.mdmlab.fr/wiki/refseq/) (date of access 31.01.2024)
 - `2024_02_multi_brex_df-RefSeq` - entries from `2024_01_df-RefSeq` corresponding bacteria containing multiple BREX-systems. Column 'abundance' was added.
 - `2024_02_genomes_accessios_dedup` - RefSeq accession IDs, extracted from `2024_01_df-RefSeq` after duplicate removal
-- `2024_02_brex_hmm_list` - hmm-profiles for BREX-proteins extrated from `PADLOC` hmm-file *via* `extract_hmm_profiles`
-- `2024_02_multi_brex_Padloc` - list of accessions with more than one copy of BREX-system *via* `multibrex_search`
-- `2024_03_19_brex_regs_coord.bed` - BREX-regions coordinates
+- `2024_02_brex_hmm_list` - hmm-profiles for BREX-proteins extrated from `PADLOC` hmm-file *via* `extract_hmm_profiles.py`
+- `2024_02_multi_brex_Padloc` - list of accessions with more than one copy of BREX-system *via* `multibrex_search.py`
+- `2024_03_19_brex_regs_coord.bed` - BREX-regions coordinates *via* `brex-extraction-padloc.py`
+- `2024_04_09_final_clusters_table.tsv` - summary tables with a clusters, proteins and annotations *via* `annotation_table.py`
+- `2024_04_29_BREX_loci_unique.txt` - *via* `loci_counter.py` (singleton treshold = 0)
 
 [**Internal data**](https://figshare.com/s/643c4203c7d2769bb938)
 
