@@ -1,3 +1,8 @@
+"""
+Selects from the general file with hmm-profiles 
+into a new hmm-file only those profiles whose names are specified
+"""
+
 # Names of proteins whose hmm-profiles need to be selected
 brx_names = ('BrxA', 'BrxB', 'BrxC', 'BrxD', 'BrxE', 'BrxF', 'BrxH', 'BrxL', 'BrxP', 'PglW', 'PglX', 'PglZ')
 
