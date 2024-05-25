@@ -1,17 +1,18 @@
-"""v2.1
-   Проверяет уникальность brex-систем по csv-файлам Padloc.
-   Сохраняет список всех мульти-brex файлов в таблицу 'multi_brex_files.tsv'
-   
-   Может создать копию / перезаписать csv-файлы результатов Padloc,
-   дополнив столбцом с уникальным ID вида: system_system.number_seqid
-   
-   Аргументы
-   1 - список названий csv-файлов Padloc
-       Предполагается, что все файлы лежат в одной директориию
-       Имена файлов записываются в итоговую таблицу со списком мульти-brex файлов
-   2 - путь до папки с этими файлами
-   3 необязательный - указать имя папки, если нужно сохранить csv-файлы Padloc с дополненным столбцом,
-                      если указать REWRITE - добавит столбец, перезаписав исходные csv-файлы
+"""
+Checks the uniqueness of brex systems using PADLOC csv-files.
+Saves a list of all multi-brex files to the table 'multi_brex_files.tsv'
+
+Can create a copy/overwrite PADLOC csv-files,
+adding a column with a unique ID: system_system.number_seqid  
+  
+  
+Args:
+1 - list of names of PADLOC csv-files
+It is assumed that all files are in the same directory
+File names are written to a summary table with a list of multi-brex files
+2 - path to the directory with these files
+3 optional - specify the folder name if needed to save updated files with an augmented column
+If  specify REWRITE, it will add a column, overwriting the original csv-files
 """
 
 import os
@@ -21,16 +22,16 @@ import pandas as pd
 
 def myf(file_path, file_name, write_csv=False):
     """
-    Из столбца 'system' отбирает только 'brex'.
-    Считает, сколько уникальных 'system.number'.
-    Если больше 1 - возвращает имя файла, количество brex-систем,
-                    количество контиг для brex,
-                    и список brex-систем с именами вида:
-                    system_system.number_seqid, например:
-                    brex_type_I_1_NC_008346.1
+    From the 'system' column selects only 'brex'.
+    Counts how many unique 'system.number' there are.
+    If greater than 1, returns 
+    the file name, 
+    the number of brex systems,
+    number of contigs for brex, 
+    and a list of brex systems with names like: system_system.number_seqid
     
-    Сохраняет csv-файл с добавляя в конец столбец 'Name' с именами,
-    если указан путь write_csv
+    Saves a csv file with a 'Name' column at the end with the names,
+    if the 'write_csv' specified
     """
 
     df = pd.read_csv(file_path)
@@ -51,15 +52,9 @@ def myf(file_path, file_name, write_csv=False):
         return file_name, str(uniq_brex_number), str(brex_contigs_number), uniq_brex_names.tolist()
 
 
-# Первый аргумент - список csv-файлов Падлока
 input_files_list = sys.argv[1]
-
-# Второй аргумент - путь до csv-файлов
 input_padloc_dir = sys.argv[2]
 
-# Третий аргумент необязательный.
-# Если указан, то это будет имя директории для сохранения дополненных csv-файлов
-# Если REWRITE - перезапишет исходные csv-файлы
 if len(sys.argv) == 4:
     if sys.argv[3] == 'REWRITE':
         output_dir = input_padloc_dir
@@ -70,15 +65,13 @@ if len(sys.argv) == 4:
 else:
     output_dir = False
 
-# Прочитать список с названиями файлов для сканирования
 files_list = []
 
 with open(input_files_list) as file:
     for line in file:
-        if not line.strip() == '':  # Проверка на пустые строки
+        if not line.strip() == '':
             files_list.append(line.strip())
 
-# Найти мульти-брекс системы
 list_multi_brex_files = []
 
 for name in files_list:
@@ -86,7 +79,7 @@ for name in files_list:
     if res:
         list_multi_brex_files.append(res)
 
-# Запись результатов
+# Outputs
 header = 'Accession' + '\t' + 'Total_brex' + '\t' + 'Contigs_brex' + '\t' + 'Brex_list' + '\n'
 with open(os.path.join('multi_brex_files.tsv'), mode='w') as file:
     file.write(header)
