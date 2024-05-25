@@ -1,4 +1,9 @@
 #!/bin/bash
+# To download large amounts of data from the GenBank: > 1000 genomes or > 15 GB (dehydrated/rehydrated method)
+# Renames the files 'genomic.gff' and 'protein.faa', adding the appropriate assembly ID to the name
+# Args:
+###1 file with a list of assembly IDs to download (Each ID must be on a separate line)
+###2 path to directory where the results will be saved
 
 datasets download genome accession --inputfile $1 --dehydrated --include genome,gff3,protein --filename $2.zip
 
